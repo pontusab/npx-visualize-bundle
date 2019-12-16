@@ -20,6 +20,7 @@ commander
 	.version(packageJson.version, '-v, --version')
 	.option('-a, --android', 'Analyse Android bundle ')
 	.option('-d, --dev', 'Analyse development bundle')
+	.option('-r', '--root', 'The root folder of your project')
 	.option('-j, --json', 'Output JSON')
 	.option('-r, --report [string]', 'Custom name for the report file (without ext)', defaultReportName)
 	.option('-k, --keep', 'Don\'t delete JS bundle and source map after execution', false)
@@ -53,6 +54,7 @@ const start = async () => {
 		isRnRunning(commander.port || 8081)
 	]);
 	let port = commander.port || (expoRunning ? 19001 : 8081);
+	const root = commander.root ? `/${commander.root}/` : '/'
 
 	if (expoRunning && !rnRunning) {
 		console.log('Found Expo app.');
@@ -96,8 +98,8 @@ const start = async () => {
 			port === 19001
 				? [`http://localhost:19001/node_modules/expo/AppEntry.bundle?${query}`]
 				: [
-						`http://localhost:${port}/index.bundle?${query}`,
-						`http://localhost:${port}/index.${platform}.bundle?${query}`
+						`http://localhost:${port}${root}index.bundle?${query}`,
+						`http://localhost:${port}${root}index.${platform}.bundle?${query}`
 				  ]
 		);
 		spinner.text = `Getting map from port ${port}...`;
@@ -106,8 +108,8 @@ const start = async () => {
 			port === 19001
 				? [`http://localhost:19001/node_modules/expo/AppEntry.map?${query}`]
 				: [
-						`http://localhost:${port}/index.map?${query}`,
-						`http://localhost:${port}/index.${platform}.map?${query}`
+						`http://localhost:${port}${root}index.map?${query}`,
+						`http://localhost:${port}${root}index.${platform}.map?${query}`
 				  ]
 		);
 		const outputDir = path.resolve(commander.output);
